@@ -1,4 +1,6 @@
 from urllib.parse import urljoin
+import urllib.robotparser
+import time
 
 # Snail searches through one base url, with the following possible filters:
 # MUST contain
@@ -13,10 +15,10 @@ from urllib.parse import urljoin
 # TODO MUST have exactly in document
 # TODO MUST have all in sentence/document
 # TODO text sentences from document.
-# TODO take robots into account.
-# TODO loop through all anchors.
 # TODO add context to filter.
 # TODO convert text to specific filter.
+# TODO stick to url base.
+# TODO fix out of memory.
 
 import requests
 from bs4 import BeautifulSoup
@@ -46,8 +48,24 @@ def process(url):
     return (wordlist, anchorlist)
 
 
-def crawl(url, filters, visited):
-    (wordlist, anchorlist) = process(url)
+def crawl(url, filters, visited, rp):
+    print(url)
+    if not rp.can_fetch("snail", url):
+        print(f"skipped {url}")
+    try:
+        (wordlist, anchorlist) = process(url)
+    except:
+        print(f"skipped {url}")
+        visited.append(url)
+        return visited
+    if not "https://www.vrt.be" in url:
+        print(f"skipped {url}")
+        visited.append(url)
+        return visited
+    delay = rp.crawl_delay("snail")
+    if delay is None:
+        delay = 1
+    time.sleep(delay)
     for filter in filters:
         if filter.matches(wordlist):
             print(url)
@@ -55,9 +73,11 @@ def crawl(url, filters, visited):
     for anchor in anchorlist:
         full_url = urljoin(url, anchor)
         if full_url not in visited:
-            visited.extend(crawl(full_url, filters, visited))
+            visited.extend(crawl(full_url, filters, visited, rp))
 
     return visited
+rp = urllib.robotparser.RobotFileParser()
+rp.set_url("https://www.vrt.be/robots.txt")
+rp.read()
 
-
-print(crawl("https://www.vrt.be/vrtnws/nl", [MustContainInDocument("Poetin")], list()))
+print(crawl("https://www.vrt.be/vrtnws/nl", [MustContainInDocument("Poetin")], list(), rp))
