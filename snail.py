@@ -17,16 +17,20 @@ import time
 # TODO add context to filter.
 # TODO convert text to specific filter.
 # TODO stick to url base.
-# TODO fix out of memory.
+# TODO fix stack overflow.
 
 import requests
 from bs4 import BeautifulSoup
 
 class URLFilter:
-    def __init__(self, contain_text):
+    def __init__(self, contain_text, must_not_contain):
         self.contain_text = contain_text
+        self.must_not_contain = must_not_contain
 
     def matches(self, url):
+        for item in self.must_not_contain:
+            if item in url:
+                return False
         return self.contain_text in url
 
 class MustContainInDocument:
@@ -56,7 +60,7 @@ def process(url):
 def crawl(url, filters, visited, rp, urlfilter):
     if not urlfilter.matches(url):
         print(f"skipped {url}")
-        visited.append(url)
+        visited.add(url)
         return visited
     if not rp.can_fetch("snail", url):
         print(f"skipped {url}")
@@ -65,7 +69,7 @@ def crawl(url, filters, visited, rp, urlfilter):
         (wordlist, anchorlist) = process(url)
     except:
         print(f"skipped {url}")
-        visited.append(url)
+        visited.add(url)
         return visited
     delay = rp.crawl_delay("snail")
     if delay is None:
@@ -74,15 +78,16 @@ def crawl(url, filters, visited, rp, urlfilter):
     for filter in filters:
         if filter.matches(wordlist):
             print(url)
-    visited.append(url)
+    visited.add(url)
     for anchor in anchorlist:
         full_url = urljoin(url, anchor)
         if full_url not in visited:
-            visited.extend(crawl(full_url, filters, visited, rp, urlfilter))
-
+            visited.update(crawl(full_url, filters, visited, rp, urlfilter))
+    v = len(visited)
+    print(f"count: {v}")
     return visited
 rp = urllib.robotparser.RobotFileParser()
 rp.set_url("https://www.vrt.be/robots.txt")
 rp.read()
 
-print(crawl("https://www.vrt.be/vrtnws/nl", [MustContainInDocument("Poetin")], list(), rp, URLFilter("https://www.vrt.be/vrtnws/nl")))
+print(crawl("https://www.vrt.be/vrtnws/nl", [MustContainInDocument("Poetin")], set(), rp, URLFilter("https://www.vrt.be/vrtnws/nl", ["podcasts", "#main-content"])))
