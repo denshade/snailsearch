@@ -7,7 +7,6 @@ import time
 # MUST NOT contain
 # MUST have exactly
 # MUST have all in sentence/document
-# support:
 # TODO MUST contain in sentence
 # TODO MUST NOT contain in sentence
 # TODO MUST NOT contain in document
@@ -22,7 +21,13 @@ import time
 
 import requests
 from bs4 import BeautifulSoup
-from collections import Counter
+
+class URLFilter:
+    def __init__(self, contain_text):
+        self.contain_text = contain_text
+
+    def matches(self, url):
+        return self.contain_text in url
 
 class MustContainInDocument:
     def __init__(self, contain_text):
@@ -48,17 +53,17 @@ def process(url):
     return (wordlist, anchorlist)
 
 
-def crawl(url, filters, visited, rp):
-    print(url)
-    if not rp.can_fetch("snail", url):
-        print(f"skipped {url}")
-    try:
-        (wordlist, anchorlist) = process(url)
-    except:
+def crawl(url, filters, visited, rp, urlfilter):
+    if not urlfilter.matches(url):
         print(f"skipped {url}")
         visited.append(url)
         return visited
-    if not "https://www.vrt.be" in url:
+    if not rp.can_fetch("snail", url):
+        print(f"skipped {url}")
+    try:
+        print(f"processing {url}")
+        (wordlist, anchorlist) = process(url)
+    except:
         print(f"skipped {url}")
         visited.append(url)
         return visited
@@ -73,11 +78,11 @@ def crawl(url, filters, visited, rp):
     for anchor in anchorlist:
         full_url = urljoin(url, anchor)
         if full_url not in visited:
-            visited.extend(crawl(full_url, filters, visited, rp))
+            visited.extend(crawl(full_url, filters, visited, rp, urlfilter))
 
     return visited
 rp = urllib.robotparser.RobotFileParser()
 rp.set_url("https://www.vrt.be/robots.txt")
 rp.read()
 
-print(crawl("https://www.vrt.be/vrtnws/nl", [MustContainInDocument("Poetin")], list(), rp))
+print(crawl("https://www.vrt.be/vrtnws/nl", [MustContainInDocument("Poetin")], list(), rp, URLFilter("https://www.vrt.be/vrtnws/nl")))
