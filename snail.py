@@ -18,9 +18,14 @@ import time
 # TODO convert text to specific filter.
 # TODO stick to url base.
 # TODO fix stack overflow.
+# TODO introduce filter and pipes
 
 import requests
 from bs4 import BeautifulSoup
+
+
+# URLInput -(Anchors)> AnchorFilter -(Anchors)> Feedback to URLInput
+#          -(Content)> ContentFilter -(URL + context)> Print the context
 
 class URLFilter:
     def __init__(self, contain_text, must_not_contain):
