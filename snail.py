@@ -2,6 +2,11 @@ from urllib.parse import urljoin
 import urllib.robotparser
 import time
 
+from snail_pipes.URLInput import process
+from snail_pipes.document_filters import MustContainInDocument
+from snail_pipes.url_filters import URLFilter
+
+
 # Snail searches through one base url, with the following possible filters:
 # MUST contain
 # MUST NOT contain
@@ -20,46 +25,11 @@ import time
 # TODO fix stack overflow.
 # TODO introduce filter and pipes
 
-import requests
-from bs4 import BeautifulSoup
 
 
 # URLInput -(Anchors)> AnchorFilter -(Anchors)> Feedback to URLInput
 #          -(Content)> ContentFilter -(URL + context)> Print the context
 
-class URLFilter:
-    def __init__(self, contain_text, must_not_contain):
-        self.contain_text = contain_text
-        self.must_not_contain = must_not_contain
-
-    def matches(self, url):
-        for item in self.must_not_contain:
-            if item in url:
-                return False
-        return self.contain_text in url
-
-class MustContainInDocument:
-    def __init__(self, contain_text):
-        self.contain_text = contain_text
-
-    def matches(self, document):
-        return self.contain_text in document
-
-
-def process(url):
-
-    source_code = requests.get(url).text
-    soup = BeautifulSoup(source_code, 'html.parser')
-
-    text = soup.get_text(separator=' ')
-    wordlist = text.split()
-
-    # --- Create an anchor list ---
-    anchorlist = []
-    for a in soup.find_all('a', href=True):
-        anchorlist.append(a['href'])
-
-    return (wordlist, anchorlist)
 
 
 def crawl(url, filters, visited, rp, urlfilter):
@@ -91,6 +61,7 @@ def crawl(url, filters, visited, rp, urlfilter):
     v = len(visited)
     print(f"count: {v}")
     return visited
+
 rp = urllib.robotparser.RobotFileParser()
 rp.set_url("https://www.vrt.be/robots.txt")
 rp.read()
