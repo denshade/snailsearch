@@ -33,34 +33,46 @@ from snail_pipes.url_filters import URLFilter
 
 
 def crawl(url, filters, visited, rp, urlfilter):
-    if not urlfilter.matches(url):
-        print(f"skipped {url}")
-        visited.add(url)
-        return visited
-    if not rp.can_fetch("snail", url):
-        print(f"skipped {url}")
-    try:
-        print(f"processing {url}")
-        (wordlist, anchorlist) = process(url)
-    except:
-        print(f"skipped {url}")
-        visited.add(url)
-        return visited
+    urls = [url]
+    for url in urls:
+        if not urlfilter.matches(url):
+            #print(f"skipped {url}")
+            visited.add(url)
+            urls.remove(url)
+            continue
+        if not rp.can_fetch("snail", url):
+            #print(f"skipped {url}")
+            urls.remove(url)
+            continue
+        try:
+            #print(f"processing {url}")
+            urls.remove(url)
+            (wordlist, anchorlist) = process(url)
+            for filter in filters:
+                if filter.matches(wordlist):
+                    print(filter.context(wordlist))
+            visited.add(url)
+            for anchor in anchorlist:
+                full_url = urljoin(url, anchor)
+                if full_url not in visited and full_url not in urls:
+                    urls.append(full_url)
+        except:
+            #print(f"skipped {url}")
+            visited.add(url)
+        robot_delay(rp)
+        if len(visited) % 10 == 1:
+            urlsL = len(urls)
+            visitedL = len(visited)
+            print(f"count: todo {urlsL} vs visited {visitedL}")
+    return visited
+
+
+def robot_delay(rp):
     delay = rp.crawl_delay("snail")
     if delay is None:
         delay = 1
     time.sleep(delay)
-    for filter in filters:
-        if filter.matches(wordlist):
-            print(url)
-    visited.add(url)
-    for anchor in anchorlist:
-        full_url = urljoin(url, anchor)
-        if full_url not in visited:
-            visited.update(crawl(full_url, filters, visited, rp, urlfilter))
-    v = len(visited)
-    print(f"count: {v}")
-    return visited
+
 
 rp = urllib.robotparser.RobotFileParser()
 rp.set_url("https://www.vrt.be/robots.txt")
