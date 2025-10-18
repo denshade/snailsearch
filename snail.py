@@ -1,6 +1,7 @@
 from urllib.parse import urljoin
 import urllib.robotparser
 import time
+import sqlite3
 
 from snail_pipes.URLInput import process
 from snail_pipes.document_filters import MustContainInDocument
@@ -22,19 +23,34 @@ from snail_pipes.url_filters import URLFilter
 # TODO add context to filter.
 # TODO convert text to specific filter.
 # TODO stick to url base.
-# TODO fix stack overflow.
 # TODO introduce filter and pipes
+# TODO add DB
+# TODO use head to avoid
 
 
-
-# URLInput -(Anchors)> AnchorFilter -(Anchors)> Feedback to URLInput
+# SQLlite -> URLInput -(Anchors)> AnchorFilter -(Anchors)> Feedback to URLInput
 #          -(Content)> ContentFilter -(URL + context)> Print the context
 
 
+def is_in_db(url, cur):
+    res = cur.execute(f"SELECT count(1) from site where url = '{url}'")
+    count = res.fetchone()
+    return count[0] > 0
 
-def crawl(url, filters, visited, rp, urlfilter):
+
+def add_to_db(url, text, cur):
+    sql = f"INSERT INTO site(url, date, text) values(?, date('now'), ?)"
+    cur.execute(sql, (url, text))
+    con.commit()
+
+
+def crawl(url, filters, visited, rp, urlfilter, cursor):
     urls = [url]
     for url in urls:
+        in_database = is_in_db(url, cursor)
+        if in_database:
+            continue
+
         if not urlfilter.matches(url):
             #print(f"skipped {url}")
             visited.add(url)
@@ -48,15 +64,17 @@ def crawl(url, filters, visited, rp, urlfilter):
             #print(f"processing {url}")
             urls.remove(url)
             (wordlist, anchorlist) = process(url)
+            add_to_db(url, ",".join(map(str, set(wordlist))), cur)
             for filter in filters:
                 if filter.matches(wordlist):
-                    print(filter.context(wordlist))
+                    print(f"{filter.context(wordlist)} {url}")
             visited.add(url)
             for anchor in anchorlist:
                 full_url = urljoin(url, anchor)
                 if full_url not in visited and full_url not in urls:
                     urls.append(full_url)
-        except:
+        except RuntimeError as error:
+            print(error)
             #print(f"skipped {url}")
             visited.add(url)
         robot_delay(rp)
@@ -73,9 +91,12 @@ def robot_delay(rp):
         delay = 1
     time.sleep(delay)
 
+con = sqlite3.connect("websites.db")
+cur = con.cursor()
+cur.execute("CREATE TABLE IF NOT EXISTS site(URL, date, text)")
 
 rp = urllib.robotparser.RobotFileParser()
 rp.set_url("https://www.vrt.be/robots.txt")
 rp.read()
 
-print(crawl("https://www.vrt.be/vrtnws/nl", [MustContainInDocument("Poetin")], set(), rp, URLFilter("https://www.vrt.be/vrtnws/nl", ["podcasts", "#main-content"])))
+print(crawl("https://www.vrt.be/vrtnws/nl", [MustContainInDocument("Poetin")], set(), rp, URLFilter("https://www.vrt.be/vrtnws/nl", ["podcasts", "#main-content"]), cur))
