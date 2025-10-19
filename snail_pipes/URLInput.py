@@ -2,7 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 def process(url):
 
-    source_code = requests.get(url).text
+    response = requests.get(url)
+    source_code = response.text
+    etag = response.headers.get("ETag")
     soup = BeautifulSoup(source_code, 'html.parser')
 
     text = soup.get_text(separator=' ')
@@ -13,4 +15,4 @@ def process(url):
     for a in soup.find_all('a', href=True):
         anchorlist.append(a['href'])
 
-    return (wordlist, anchorlist)
+    return (wordlist, anchorlist, etag)

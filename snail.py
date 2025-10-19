@@ -3,6 +3,8 @@ import urllib.robotparser
 import time
 import sqlite3
 
+import requests
+
 from snail_pipes.URLInput import process
 from snail_pipes.document_filters import MustContainInDocument
 from snail_pipes.url_filters import URLFilter
@@ -21,11 +23,11 @@ from snail_pipes.url_filters import URLFilter
 # TODO MUST have all in sentence/document
 # TODO text sentences from document.
 # TODO add context to filter.
-# TODO convert text to specific filter.
-# TODO stick to url base.
-# TODO introduce filter and pipes
-# TODO add DB
 # TODO use head to avoid
+
+# Query to database.
+# TODO convert text to specific filter.
+
 
 
 # SQLlite -> URLInput -(Anchors)> AnchorFilter -(Anchors)> Feedback to URLInput
@@ -38,16 +40,28 @@ def is_in_db(url, cur):
     return count[0] > 0
 
 
-def add_to_db(url, text, cur):
-    sql = f"INSERT INTO site(url, date, text) values(?, date('now'), ?)"
-    cur.execute(sql, (url, text))
+def is_in_db_etag(url, etag, cur):
+    res = cur.execute(f"SELECT count(1) from site where url = '{url}' and etag = '{etag}'")
+    count = res.fetchone()
+    return count[0] > 0
+
+
+def etag_head(url):
+    response = requests.head(url)
+    return response.headers.get("ETag")
+
+
+def add_to_db(url, text, cur, etag):
+    sql = f"INSERT INTO site(url, etag, text) values(?, ?, ?)"
+    cur.execute(sql, (url, etag, text))
     con.commit()
 
 
 def crawl(url, filters, visited, rp, urlfilter, cursor):
     urls = [url]
     for url in urls:
-        in_database = is_in_db(url, cursor)
+        tag = etag_head(url)
+        in_database = is_in_db_etag(url, tag, cursor)
         if in_database:
             continue
 
@@ -63,8 +77,8 @@ def crawl(url, filters, visited, rp, urlfilter, cursor):
         try:
             #print(f"processing {url}")
             urls.remove(url)
-            (wordlist, anchorlist) = process(url)
-            add_to_db(url, ",".join(map(str, set(wordlist))), cur)
+            (wordlist, anchorlist, etag) = process(url)
+            add_to_db(url, ",".join(map(str, set(wordlist))), cur, etag)
             for filter in filters:
                 if filter.matches(wordlist):
                     print(f"{filter.context(wordlist)} {url}")
@@ -93,7 +107,7 @@ def robot_delay(rp):
 
 con = sqlite3.connect("websites.db")
 cur = con.cursor()
-cur.execute("CREATE TABLE IF NOT EXISTS site(URL, date, text)")
+cur.execute("CREATE TABLE IF NOT EXISTS site(URL, etag, text)")
 
 rp = urllib.robotparser.RobotFileParser()
 rp.set_url("https://www.vrt.be/robots.txt")
