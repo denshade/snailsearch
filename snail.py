@@ -65,6 +65,8 @@ def add_to_db(url, text, cur, etag):
 def crawl(url, filters, visited, rp, urlfilter, cursor):
     urls = [url]
     for url in urls:
+        if url.startswith("mailto:"):
+            continue
         tag = etag_head(url)
         in_database = is_in_db_etag(url, tag, cursor)
         if in_database:
