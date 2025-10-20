@@ -48,10 +48,15 @@ def is_in_db_etag(url, etag, cur):
 
 def etag_head(url):
     response = requests.head(url)
-    return response.headers.get("ETag")
+    tag = response.headers.get("ETag")
+    if tag is None:
+        return None
+    return tag.replace("\"", "")
 
 
 def add_to_db(url, text, cur, etag):
+    sql = f"DELETE from site where url = ?"
+    cur.execute(sql, (url,))
     sql = f"INSERT INTO site(url, etag, text) values(?, ?, ?)"
     cur.execute(sql, (url, etag, text))
     con.commit()
