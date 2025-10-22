@@ -5,6 +5,8 @@ def process(url):
     response = requests.get(url)
     source_code = response.text
     etag = response.headers.get("ETag")
+    if etag is not None:
+        etag = etag.replace("\"", "")
     soup = BeautifulSoup(source_code, 'html.parser')
 
     text = soup.get_text(separator=' ')

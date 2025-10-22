@@ -86,16 +86,12 @@ def crawl(url, filters, visited, rp, urlfilter, cursor):
             urls.remove(url)
             (wordlist, anchorlist, etag) = process(url)
             add_to_db(url, ",".join(map(str, set(wordlist))), cur, etag)
-            for filter in filters:
-                if filter.matches(wordlist):
-                    print(f"{filter.context(wordlist)} {url}")
             visited.add(url)
             for anchor in anchorlist:
                 full_url = urljoin(url, anchor)
                 if full_url not in visited and full_url not in urls:
                     urls.append(full_url)
-        except RuntimeError as error:
-            print(error)
+        except:
             #print(f"skipped {url}")
             visited.add(url)
         robot_delay(rp)
