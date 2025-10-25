@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import re
 def process(url):
 
     response = requests.get(url)
@@ -10,7 +11,7 @@ def process(url):
     soup = BeautifulSoup(source_code, 'html.parser')
 
     text = soup.get_text(separator=' ')
-    wordlist = text.split()
+    wordlist = re.split('[^a-zA-Z]', text.lower())
 
     # --- Create an anchor list ---
     anchorlist = []

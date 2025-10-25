@@ -23,8 +23,6 @@
 - MUST have all in sentence/document
 
 # website -> databases
-- clean up special characters
-- lower case text
 - url in database name
 
 # Managing sources
