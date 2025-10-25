@@ -10,23 +10,6 @@ from snail_pipes.document_filters import MustContainInDocument
 from snail_pipes.url_filters import URLFilter
 
 
-# Snail searches through one base url, with the following possible filters:
-# MUST contain
-# MUST NOT contain
-# MUST have exactly
-# MUST have all in sentence/document
-# TODO MUST contain in sentence
-# TODO MUST NOT contain in sentence
-# TODO MUST NOT contain in document
-# TODO MUST have exactly in sentence
-# TODO MUST have exactly in document
-# TODO MUST have all in sentence/document
-# TODO text sentences from document.
-# TODO add context to filter.
-# TODO use head to avoid
-
-# Query to database.
-# TODO convert text to specific filter.
 
 
 
@@ -67,11 +50,6 @@ def crawl(url, filters, visited, rp, urlfilter, cursor):
     for url in urls:
         if url.startswith("mailto:"):
             continue
-        tag = etag_head(url)
-        in_database = is_in_db_etag(url, tag, cursor)
-        if in_database:
-            continue
-
         if not urlfilter.matches(url):
             #print(f"skipped {url}")
             visited.add(url)
@@ -80,6 +58,12 @@ def crawl(url, filters, visited, rp, urlfilter, cursor):
         if not rp.can_fetch("snail", url):
             #print(f"skipped {url}")
             urls.remove(url)
+            continue
+        tag = etag_head(url)
+        in_database = is_in_db_etag(url, tag, cursor)
+        if in_database:
+            urls.remove(url)
+            visited.add(url)
             continue
         try:
             #print(f"processing {url}")
