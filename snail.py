@@ -45,7 +45,9 @@ def add_to_db(url, text, cur, etag):
     con.commit()
 
 
-def crawl(url, filters, visited, rp, urlfilter, cursor):
+def crawl(url, visited, rp, urlfilter, cursor):
+    cached = 0
+    processed = 0
     urls = [url]
     for url in urls:
         if url.startswith("mailto:"):
@@ -64,11 +66,13 @@ def crawl(url, filters, visited, rp, urlfilter, cursor):
         if in_database:
             urls.remove(url)
             visited.add(url)
+            cached += 1
             continue
         try:
             #print(f"processing {url}")
             urls.remove(url)
             (wordlist, anchorlist, etag) = process(url)
+            processed += 1
             add_to_db(url, ",".join(map(str, set(wordlist))), cur, etag)
             visited.add(url)
             for anchor in anchorlist:
@@ -82,7 +86,7 @@ def crawl(url, filters, visited, rp, urlfilter, cursor):
         if len(visited) % 10 == 1:
             urlsL = len(urls)
             visitedL = len(visited)
-            print(f"count: todo {urlsL} vs visited {visitedL}")
+            print(f"count: todo {urlsL} vs visited {visitedL}, cache {cached} processed {processed}")
     return visited
 
 
@@ -100,4 +104,5 @@ rp = urllib.robotparser.RobotFileParser()
 rp.set_url("https://www.vrt.be/robots.txt")
 rp.read()
 
-print(crawl("https://www.vrt.be/vrtnws/nl", [MustContainInDocument("Poetin")], set(), rp, URLFilter("https://www.vrt.be/vrtnws/nl", ["podcasts", "#main-content"]), cur))
+print(crawl("https://www.vrt.be/vrtnws/nl", set(), rp,
+            URLFilter("https://www.vrt.be/vrtnws/nl", ["podcasts", "#main-content"]), cur))
