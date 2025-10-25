@@ -2,5 +2,5 @@ import sqlite3
 con = sqlite3.connect("websites.db")
 cur = con.cursor()
 
-res = cur.execute(f"SELECT max(length(text)) from site")
+res = cur.execute(f"SELECT count(*) from site")
 print(res.fetchall())

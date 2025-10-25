@@ -1,14 +1,7 @@
 
 # Snail searches through one base url, with the following possible filters:
 # search terms
-- MUST contain
 - MUST NOT contain
-- MUST have exactly
-- MUST have all in sentence/document
-- TODO MUST NOT contain in document
-- TODO MUST have exactly in document
-- TODO MUST have all in document
-- TODO text sentences from document.
 
 # Front end
 - Create a frontend
