@@ -6,7 +6,6 @@ import sqlite3
 import requests
 
 from snail_pipes.URLInput import process
-from snail_pipes.document_filters import MustContainInDocument
 from snail_pipes.url_filters import URLFilter
 
 
@@ -96,13 +95,13 @@ def robot_delay(rp):
         delay = 1
     time.sleep(delay)
 
-con = sqlite3.connect("websites.db")
+con = sqlite3.connect("lite.cnn.com.db")
 cur = con.cursor()
 cur.execute("CREATE TABLE IF NOT EXISTS site(URL, etag, text)")
 
 rp = urllib.robotparser.RobotFileParser()
-rp.set_url("https://www.vrt.be/robots.txt")
+rp.set_url("https://lite.cnn.com/robots.txt")
 rp.read()
 
-print(crawl("https://www.vrt.be/vrtnws/nl", set(), rp,
-            URLFilter("https://www.vrt.be/vrtnws/nl", ["podcasts", "#main-content"]), cur))
+print(crawl("https://lite.cnn.com/", set(), rp,
+            URLFilter("https://lite.cnn.com/", []), cur))
