@@ -27,7 +27,7 @@
 # List of interesting hosts
 - Add list as category.
 
-# Create word list from website databases
-
+# Create word cloud from website databases
+- Create word cloud
 
 # Maybe try big table? 
