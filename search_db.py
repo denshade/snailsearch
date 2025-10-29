@@ -50,4 +50,4 @@ def do_filter(cur, or_word_list, and_word_list):
 con = sqlite3.connect("websites.db")
 cur = con.cursor()
 
-do_filter(cur, ["Vaneeckhaute"], [])
+do_filter(cur, ["Putin", "Poetin"], [])
