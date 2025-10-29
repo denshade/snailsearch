@@ -36,7 +36,7 @@ def etag_head(url):
     return tag.replace("\"", "")
 
 
-def add_to_db(url, text, cur, etag):
+def add_to_db(url, text, cur, etag, con):
     sql = f"DELETE from site where url = ?"
     cur.execute(sql, (url,))
     sql = f"INSERT INTO site(url, etag, text) values(?, ?, ?)"
@@ -44,7 +44,7 @@ def add_to_db(url, text, cur, etag):
     con.commit()
 
 
-def crawl(url, visited, rp, urlfilter, cursor):
+def crawl(url, visited, rp, urlfilter, cursor, con):
     cached = 0
     processed = 0
     urls = [url]
@@ -72,7 +72,7 @@ def crawl(url, visited, rp, urlfilter, cursor):
             urls.remove(url)
             (wordlist, anchorlist, etag) = process(url)
             processed += 1
-            add_to_db(url, ",".join(map(str, set(wordlist))), cur, etag)
+            add_to_db(url, ",".join(map(str, set(wordlist))), cursor, etag, con)
             visited.add(url)
             for anchor in anchorlist:
                 full_url = urljoin(url, anchor)
@@ -95,13 +95,18 @@ def robot_delay(rp):
         delay = 1
     time.sleep(delay)
 
-con = sqlite3.connect("lite.cnn.com.db")
-cur = con.cursor()
-cur.execute("CREATE TABLE IF NOT EXISTS site(URL, etag, text)")
 
-rp = urllib.robotparser.RobotFileParser()
-rp.set_url("https://lite.cnn.com/robots.txt")
-rp.read()
+def create_db(url):
+    con = sqlite3.connect(f"{url}.db")
+    cur = con.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS site(URL, etag, text)")
 
-print(crawl("https://lite.cnn.com/", set(), rp,
-            URLFilter("https://lite.cnn.com/", []), cur))
+    rp = urllib.robotparser.RobotFileParser()
+    rp.set_url(f"https://{url}/robots.txt")
+    rp.read()
+
+    print(crawl(f"https://{url}/", set(), rp,
+                URLFilter(f"https://{url}", []), cur, con))
+
+
+create_db("lite.cnn.com")
