@@ -32,22 +32,26 @@ def must_not_contain_all(words: list):
     filter = filter[length:]
     return filter
 
-def do_filter(cur, or_word_list, and_word_list):
+def do_filter(cur, or_word_list, and_word_list, not_words):
     and_list = must_contain(and_word_list)
     or_list = must_contain_any(or_word_list)
-    if and_list == "":
-        filter = or_list
-    elif or_list == "":
-        filter = and_list
-    else:
-        filter = f"{and_list} AND {or_list}"
+    not_list = must_not_contain_all(not_words)
+    filters = []
+    if and_list != "":
+        filters.append(and_list)
+    if or_list != "":
+        filters.append(or_list)
+    if not_list != "":
+        filters.append(not_list)
+
+    filter = " AND ".join(filters)
     query = f"SELECT URL from site where {filter}"
     res = cur.execute(query)
     results = res.fetchall()
     print_results(results)
 
 
-con = sqlite3.connect("websites.db")
+con = sqlite3.connect("data/websites.db")
 cur = con.cursor()
 
-do_filter(cur, ["Putin", "Poetin"], [])
+do_filter(cur, ["Putin", "Poetin"], [], ["Trump"])
