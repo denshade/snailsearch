@@ -1,6 +1,6 @@
 import sqlite3
 
-def must_contain(cur, words: list):
+def must_contain(words: list):
     filter = ""
     for word in words:
         filter = filter + f" AND text LIKE '%,{word.lower()},%'"
@@ -15,7 +15,7 @@ def print_results(results):
     print(f"{len(results)} results")
 
 
-def must_contain_any(cur, words: list):
+def must_contain_any(words: list):
     filter = ""
     for word in words:
         filter = filter + f" OR text LIKE '%,{word.lower()},%'"
@@ -24,9 +24,17 @@ def must_contain_any(cur, words: list):
     return filter
 
 
+def must_not_contain_all(words: list):
+    filter = ""
+    for word in words:
+        filter = filter + f" AND text NOT LIKE '%,{word.lower()},%'"
+    length = len(" AND ")
+    filter = filter[length:]
+    return filter
+
 def do_filter(cur, or_word_list, and_word_list):
-    and_list = must_contain(cur, and_word_list)
-    or_list = must_contain_any(cur, or_word_list)
+    and_list = must_contain(and_word_list)
+    or_list = must_contain_any(or_word_list)
     if and_list == "":
         filter = or_list
     elif or_list == "":
