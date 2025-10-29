@@ -16,12 +16,18 @@
 - MUST have all in sentence/document
 
 # website -> databases
-- url in database name
-
+- Start from database to clean up old websites and update updated websites
+ 
 # Managing sources
 - Gather interesting hostnames
 
 # Share databases through peer 2 peer
 - Intro
+
+# List of interesting hosts
+- Add list as category.
+
+# Create word list from website databases
+
 
 # Maybe try big table? 
