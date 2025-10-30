@@ -109,4 +109,6 @@ def create_db(url):
                 URLFilter(f"https://{url}", []), cur, con))
 
 
-create_db("lite.cnn.com")
+#create_db("lite.cnn.com")
+create_db("www.demorgen.be")
+

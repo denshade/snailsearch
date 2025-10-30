@@ -5,7 +5,6 @@
 # Front end
 - Allow to create a query, show overview
 - Show the used search terms
-- Bootstrap.
 
 # Deeper search after filtered pages
 - Go to document to support in sentence queries

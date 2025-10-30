@@ -1,6 +1,6 @@
 import sqlite3
-con = sqlite3.connect("data/websites.db")
+con = sqlite3.connect("www.demorgen.be.db")
 cur = con.cursor()
 
-res = cur.execute(f"SELECT * from site where url  = 'https://www.vrt.be/vrtnws/nl'")
+res = cur.execute(f"SELECT * from site limit 10")
 print(res.fetchall())
