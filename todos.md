@@ -1,11 +1,11 @@
 
 # Snail searches through one base url, with the following possible filters:
 # search terms
-- MUST NOT contain
 
 # Front end
-- Create a frontend
 - Allow to create a query, show overview
+- Show the used search terms
+- Bootstrap.
 
 # Deeper search after filtered pages
 - Go to document to support in sentence queries
