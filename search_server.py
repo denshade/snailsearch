@@ -18,7 +18,7 @@ def search():
     or_list = request.form['orlist'].split(" ")
     not_list = request.form['notlist'].split(" ")
     urls = search_on_host(or_list, and_list, not_list)
-    return render_template('results.html', urls=urls)
+    return render_template('results.html', urls=urls, orlist=" ".join(or_list), andlist=" ".join(and_list), notlist=" ".join(not_list))
 
 
 @app.route('/')

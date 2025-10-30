@@ -7,6 +7,21 @@
 </head>
    <body>
    <div class="container">
+                ⠀⠀⠀⣤⣄⠀⠀⠀⠀⠀⠀⢀⣤⠶⠒⠚⠛⠒⠲⢦⣄⠀⠀<BR/>⠀⠀⠀⠀
+⣤⡄⠀⠛⡿⠀⠀⠀⠀⠀⣴⠋⠀⠀⠀⠀⠀⠀⠀⠀⠈⠳⣄⠀⠀⠀⠀<BR/>⠀⠀⠀⠀
+⠙⢻⡀⠀⣧⠀⠀⠀⠀⢰⡇⠀⠀⠀⣠⡴⠞⠛⠓⢶⣄⠀⠸⣆⠀⠀⠀<BR/>⠀⠀⠀⠀
+⠀⠈⢳⠶⠛⠛⠶⣄⠀⠸⡇⠀⢀⡾⠁⢀⡴⠶⢶⡄⠙⣧⠀⢻⠀⠀⠀<BR/>⠀⠀⠀⠀
+⠀⠀⣟⠀⠀⠀⠀⠹⣦⡤⠿⠀⢸⡇⢠⡟⢀⡾⠀⣿⠀⣿⠀⣼⠁⠀⠀<BR/>⠀⠀⠀⠀
+⠀⠀⢻⡀⠀⠀⠀⠀⠻⣄⠀⠀⠸⣇⠀⢷⡀⠛⠛⢁⣴⠃⣠⠏⠀⠀⠀<BR/>⠀⠀⠀⠀
+⠀⠀⠀⠻⣆⠀⠀⠀⠀⠈⠳⢦⣄⣙⣷⣄⣉⠛⠛⣋⣠⡴⠋⠀⠀⠀⠀<BR/>⠀⠀⠀⠀
+⠀⠀⠀⠀⠈⠛⢦⣄⡀⠀⠀⠀⠀⠀⠀⠉⠉⠙⠛⠛⠛⠓⠒⠶⠞⣻⠂<BR/>⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠘⢧⣤⡤⠖⠓⠶⠤⠶⠒⠶⠴⠞⠛⠶⠞⠛⠛⠛⠁⠀<BR/>⠀⠀⠀⠀
+      <form action = "http://localhost:5000/search" method = "post">
+         <p>Any of these words: <BR/><input class="form-control" type="text" name = "orlist" value="{{orlist}}" /></p>
+          <p>Must have all of these words: <BR/><input class="form-control" type="text" name = "andlist" value="{{andlist}}"/></p>
+          <p>Must not contain this word:<BR/> <input class="form-control" type="text" name = "notlist" value="{{notlist}}"/></p>
+         <p><input type="submit" class="btn btn-primary" value = "Search" /></p>
+      </form>
         {% for url in urls %}
         <div class="card">
             <a href="{{url[0]}}">{{url[0]}}</a>

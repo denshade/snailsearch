@@ -111,4 +111,6 @@ def create_db(url):
 
 #create_db("lite.cnn.com")
 create_db("www.demorgen.be")
+create_db("nos.nl")
+create_db("rtl.nl")
 
