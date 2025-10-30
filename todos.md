@@ -5,6 +5,7 @@
 # Front end
 - Allow to create a query, show overview
 - Show the used search terms
+- Show the context of the results
 
 # Deeper search after filtered pages
 - Go to document to support in sentence queries
