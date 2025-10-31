@@ -24,7 +24,8 @@
 - Intro
 
 # List of interesting hosts
-- Add list as category.
+- Add list per category.
+- Create a loop that goes over a list of hosts.
 
 # Create word cloud from website databases
 - Create word cloud
