@@ -44,7 +44,7 @@ def add_to_db(url, text, cur, etag, con):
     con.commit()
 
 
-def add_to_hosts(url, cur,con):
+def add_to_hosts(url, cur, con):
     sql = f"INSERT OR IGNORE INTO host(url) values(?)"
     cur.execute(sql, (url,))
     con.commit()
@@ -69,14 +69,14 @@ def crawl(url, visited, rp, urlfilter, cursor, con, hostcursor, hostcon):
             #print(f"skipped {url}")
             urls.remove(url)
             continue
-        tag = etag_head(url)
-        in_database = is_in_db_etag(url, tag, cursor)
-        if in_database:
-            urls.remove(url)
-            visited.add(url)
-            cached += 1
-            continue
         try:
+            tag = etag_head(url)
+            in_database = is_in_db_etag(url, tag, cursor)
+            if in_database:
+                urls.remove(url)
+                visited.add(url)
+                cached += 1
+                continue
             #print(f"processing {url}")
             urls.remove(url)
             (wordlist, anchorlist, etag) = process(url)
@@ -111,7 +111,7 @@ def create_db(url):
     cur.execute("CREATE TABLE IF NOT EXISTS site(URL, etag, text)")
 
     hostcon = sqlite3.connect(f"data/hosts.db")
-    hostcur = con.cursor()
+    hostcur = hostcon.cursor()
     hostcur.execute("CREATE TABLE IF NOT EXISTS host(URL, UNIQUE(URL))")
 
     rp = urllib.robotparser.RobotFileParser()
@@ -122,7 +122,7 @@ def create_db(url):
                 URLFilter(f"https://{url}", []), cur, con, hostcur, hostcon))
 
 
-#create_db("lite.cnn.com")
+create_db("lite.cnn.com")
 create_db("www.demorgen.be")
 create_db("nos.nl")
 create_db("rtl.nl")
