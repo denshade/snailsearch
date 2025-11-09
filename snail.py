@@ -1,4 +1,4 @@
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit, urlunsplit
 import urllib.robotparser
 import time
 import sqlite3
@@ -44,15 +44,24 @@ def add_to_db(url, text, cur, etag, con):
     con.commit()
 
 
-def crawl(url, visited, rp, urlfilter, cursor, con):
+def add_to_hosts(url, cur,con):
+    sql = f"INSERT OR IGNORE INTO host(url) values(?)"
+    cur.execute(sql, (url,))
+    con.commit()
+
+
+def crawl(url, visited, rp, urlfilter, cursor, con, hostcursor, hostcon):
     cached = 0
     processed = 0
     urls = [url]
     for url in urls:
-        if url.startswith("mailto:"):
+        if not (url.startswith("https://") or url.startswith("http://")):
             continue
         if not urlfilter.matches(url):
-            #print(f"skipped {url}")
+            split_url = urlsplit(url)
+            clean_url = f"{split_url.scheme}://{split_url.netloc}"
+            print(f"skipped {clean_url}")
+            add_to_hosts(clean_url, hostcursor, hostcon)
             visited.add(url)
             urls.remove(url)
             continue
@@ -97,16 +106,20 @@ def robot_delay(rp):
 
 
 def create_db(url):
-    con = sqlite3.connect(f"{url}.db")
+    con = sqlite3.connect(f"data/{url}.db")
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS site(URL, etag, text)")
+
+    hostcon = sqlite3.connect(f"data/hosts.db")
+    hostcur = con.cursor()
+    hostcur.execute("CREATE TABLE IF NOT EXISTS host(URL, UNIQUE(URL))")
 
     rp = urllib.robotparser.RobotFileParser()
     rp.set_url(f"https://{url}/robots.txt")
     rp.read()
 
     print(crawl(f"https://{url}/", set(), rp,
-                URLFilter(f"https://{url}", []), cur, con))
+                URLFilter(f"https://{url}", []), cur, con, hostcur, hostcon))
 
 
 #create_db("lite.cnn.com")

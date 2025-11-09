@@ -3,7 +3,6 @@
 # search terms
 
 # Front end
-- Allow to create a query, show overview
 - Show the context of the results
 
 # Deeper search after filtered pages
@@ -15,10 +14,9 @@
 - MUST have all in sentence/document
 
 # website -> databases
-- Start from database to clean up old websites and update updated websites
  
 # Managing sources
-- Gather interesting hostnames
+- Gather hostnames in database
 
 # Share databases through peer 2 peer
 - Intro
