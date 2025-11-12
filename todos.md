@@ -29,3 +29,5 @@
 - Create word cloud
 
 # Maybe try big table? 
+
+# Do not return bools, return bool + reason. You can ignore reason.

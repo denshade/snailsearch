@@ -105,7 +105,7 @@ def robot_delay(rp):
     time.sleep(delay)
 
 
-def create_db(url):
+def create_db(url, starturl):
     con = sqlite3.connect(f"data/{url}.db")
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS site(URL, etag, text)")
@@ -115,15 +115,19 @@ def create_db(url):
     hostcur.execute("CREATE TABLE IF NOT EXISTS host(URL, UNIQUE(URL))")
 
     rp = urllib.robotparser.RobotFileParser()
-    rp.set_url(f"https://{url}/robots.txt")
-    rp.read()
+    with urllib.request.urlopen(urllib.request.Request(f"https://{url}/robots.txt",
+                                                       headers={'User-Agent': 'Python'})) as response:
+        rp.parse(response.read().decode("utf-8").splitlines())
+    if starturl == None:
+        starturl = url
 
-    print(crawl(f"https://{url}/", set(), rp,
+    print(crawl(starturl, set(), rp,
                 URLFilter(f"https://{url}", []), cur, con, hostcur, hostcon))
 
 
-create_db("lite.cnn.com")
-create_db("www.demorgen.be")
-create_db("nos.nl")
-create_db("rtl.nl")
+create_db("nl.wikipedia.org", "https://nl.wikipedia.org/wiki/Hoofdpagina")
+#create_db("lite.cnn.com")
+#create_db("www.demorgen.be")
+#create_db("nos.nl")
+#create_db("rtl.nl")
 
