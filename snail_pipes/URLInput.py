@@ -2,8 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 import re
 def process(url):
-
-    response = requests.get(url)
+    headers = {
+        'User-Agent': 'Python',
+    }
+    response = requests.get(url, headers=headers)
     source_code = response.text
     etag = response.headers.get("ETag")
     if etag is not None:
