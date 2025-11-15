@@ -101,7 +101,7 @@ def robot_delay(rp):
 
 
 def create_db(url):
-    con = sqlite3.connect(f"{url}.db")
+    con = sqlite3.connect(f"data/{url}.db")
     cur = con.cursor()
     rp = urllib.robotparser.RobotFileParser()
     rp.set_url(f"https://{url}/robots.txt")
@@ -111,8 +111,8 @@ def create_db(url):
                          URLFilter(f"https://{url}", []), cur, con))
 
 
-# create_db("lite.cnn.com")
-create_db("nl.wikipedia.org")
+create_db("lite.cnn.com")
+# create_db("nl.wikipedia.org")
 #create_db("www.demorgen.be")
 #create_db("nos.nl")
 #create_db("rtl.nl")

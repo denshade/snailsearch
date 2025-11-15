@@ -7,7 +7,7 @@ import requests
 
 from snail_pipes.URLInput import process
 from snail_pipes.url_filters import URLFilter
-
+from abstr2.context import ContextMap
 
 
 
@@ -50,12 +50,13 @@ def add_to_hosts(url, cur, con):
     con.commit()
 
 
-def crawl(url, visited, rp, urlfilter, cursor, con, hostcursor, hostcon):
+def crawl(url, visited, rp, urlfilter, cursor, con, hostcursor, hostcon, contextmap):
     cached = 0
     processed = 0
     urls = [url]
     for url in urls:
-        if not (url.startswith("https://") or url.startswith("http://")):
+        contextmap.current_url = url
+        if not (is_supported_site(url)):
             continue
         if not urlfilter.matches(url):
             split_url = urlsplit(url)
@@ -65,7 +66,7 @@ def crawl(url, visited, rp, urlfilter, cursor, con, hostcursor, hostcon):
             visited.add(url)
             urls.remove(url)
             continue
-        if not rp.can_fetch("snail", url):
+        if rp is not None and not rp.can_fetch("snail", url):
             #print(f"skipped {url}")
             urls.remove(url)
             continue
@@ -98,6 +99,10 @@ def crawl(url, visited, rp, urlfilter, cursor, con, hostcursor, hostcon):
     return visited
 
 
+def is_supported_site(contextmap: ContextMap):
+    return contextmap.current_url.startswith("https://") or contextmap.current_url.startswith("http://")
+
+
 def robot_delay(rp):
     delay = rp.crawl_delay("snail")
     if delay is None:
@@ -105,28 +110,32 @@ def robot_delay(rp):
     time.sleep(delay)
 
 
-def create_db(url, starturl):
-    con = sqlite3.connect(f"data/{url}.db")
+def create_db(hostname, contextmap: ContextMap, starturl=None):
+    con = sqlite3.connect(f"../data/{hostname}.db")
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS site(URL, etag, text)")
 
-    hostcon = sqlite3.connect(f"data/hosts.db")
+    hostcon = sqlite3.connect(f"../data/hosts.db")
     hostcur = hostcon.cursor()
     hostcur.execute("CREATE TABLE IF NOT EXISTS host(URL, LAST_UPDATE, UNIQUE(URL))")
 
     rp = urllib.robotparser.RobotFileParser()
-    with urllib.request.urlopen(urllib.request.Request(f"https://{url}/robots.txt",
+    try:
+        with urllib.request.urlopen(urllib.request.Request(f"https://{hostname}/robots.txt",
                                                        headers={'User-Agent': 'Python'})) as response:
-        rp.parse(response.read().decode("utf-8").splitlines())
+            rp.parse(response.read().decode("utf-8").splitlines())
+    except:
+        print("error load robots.txt")
+        rp = None
     if starturl == None:
-        starturl = url
+        starturl = f"https://{hostname}"
 
     print(crawl(starturl, set(), rp,
-                URLFilter(f"https://{url}", []), cur, con, hostcur, hostcon))
+                URLFilter(f"https://{hostname}", []), cur, con, hostcur, hostcon, contextmap))
 
-
-create_db("nl.wikipedia.org", "https://nl.wikipedia.org/wiki/Hoofdpagina")
-#create_db("lite.cnn.com")
+contextmap = ContextMap()
+#create_db("nl.wikipedia.org", "https://nl.wikipedia.org/wiki/Hoofdpagina")
+create_db("lite.cnn.com", contextmap)
 #create_db("www.demorgen.be")
 #create_db("nos.nl")
 #create_db("rtl.nl")

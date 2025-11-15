@@ -4,6 +4,10 @@
 
 # Front end
 - Show the context of the results
+- Show available databases
+- Allow for choosing database
+# Create a UI to trigger snails on websites
+- Add a new host
 
 # Deeper search after filtered pages
 - Go to document to support in sentence queries
@@ -14,6 +18,8 @@
 - MUST have all in sentence/document
 
 # website -> databases
+- keep a db of last update
+- Store the last full update in that table. 
  
 # Managing sources
 - Gather hostnames in database
