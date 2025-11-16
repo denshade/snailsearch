@@ -35,8 +35,3 @@ def create_host_specific_index(contextmap: ContextMap) -> ContextMap:
     contextmap.index_cursor = con
     return contextmap
 
-
-def is_etag_in_index(url, etag, cur):
-    res = cur.execute(f"SELECT count(1) from site where url = '{url}' and etag = '{etag}'")
-    count = res.fetchone()
-    return count[0] > 0

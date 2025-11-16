@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+
+
 def process(url):
     headers = {
         'User-Agent': 'Python',
@@ -19,5 +21,11 @@ def process(url):
     anchorlist = []
     for a in soup.find_all('a', href=True):
         anchorlist.append(a['href'])
+    return ProcessResult(wordlist, anchorlist, etag)
 
-    return (wordlist, anchorlist, etag)
+
+class ProcessResult:
+    def __init__(self, wordlist, anchorlist, etag):
+        self.wordlist = wordlist
+        self.anchorlist = anchorlist
+        self.etag = etag

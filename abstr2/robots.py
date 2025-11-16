@@ -1,5 +1,6 @@
 import time
 import urllib
+import urllib.robotparser
 
 from abstr2.context import ContextMap
 

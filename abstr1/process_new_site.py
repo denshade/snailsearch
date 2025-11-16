@@ -1,9 +1,6 @@
-from urllib.parse import urljoin, urlsplit, urlunsplit
-import urllib.robotparser
-
-import requests
-
-from abstr2.hosts import add_to_unknown_hosts, load_hosts, create_host_specific_index, is_etag_in_index
+from urllib.parse import urljoin
+from abstr2.hosts import add_to_unknown_hosts, load_hosts, create_host_specific_index
+from abstr2.index import add_to_index, is_etag_in_index
 from abstr2.robots import do_robot_delay, load_robots_parser
 from abstr2.site_processing import etag_head
 from abstr2.urls import does_not_need_be_indexed
@@ -17,27 +14,10 @@ from abstr2.context import ContextMap
 # SQLlite -> URLInput -(Anchors)> AnchorFilter -(Anchors)> Feedback to URLInput
 #          -(Content)> ContentFilter -(URL + context)> Print the context
 
-
-def add_to_db(url, text, cur, etag, con):
-    sql = f"DELETE from site where url = ?"
-    cur.execute(sql, (url,))
-    sql = f"INSERT INTO site(url, etag, text) values(?, ?, ?)"
-    cur.execute(sql, (url, etag, text))
-    con.commit()
-
-
-def add_to_hosts(url, cur, con):
-    sql = f"INSERT OR IGNORE INTO host(url) values(?)"
-    cur.execute(sql, (url,))
-    con.commit()
-
-
 def crawl(url, visited, urlfilter, contextmap: ContextMap):
     cached = 0
     processed = 0
     contextmap.url_filter = urlfilter
-    cursor = contextmap.index_cursor
-    con = contextmap.index_connection
     urls = [url]
     for url in urls:
         contextmap.current_url = url
@@ -48,19 +28,18 @@ def crawl(url, visited, urlfilter, contextmap: ContextMap):
             continue
         try:
             tag = etag_head(url)
-            in_database = is_etag_in_index(url, tag, cursor)
+            in_database = is_etag_in_index(url, tag, contextmap)
             if in_database:
                 urls.remove(url)
                 visited.add(url)
                 cached += 1
                 continue
-            #print(f"processing {url}")
             urls.remove(url)
-            (wordlist, anchorlist, etag) = process(url)
+            process_result = process(url)
             processed += 1
-            add_to_db(url, ",".join(map(str, set(wordlist))), cursor, etag, con)
+            add_to_index(contextmap, process_result)
             visited.add(url)
-            for anchor in anchorlist:
+            for anchor in process_result.anchorlist:
                 full_url = urljoin(url, anchor)
                 if full_url not in visited and full_url not in urls:
                     urls.append(full_url)
@@ -73,10 +52,6 @@ def crawl(url, visited, urlfilter, contextmap: ContextMap):
             visitedL = len(visited)
             print(f"count: todo {urlsL} vs visited {visitedL}, cache {cached} processed {processed}")
     return visited
-
-
-def is_supported_site(contextmap: ContextMap):
-    return contextmap.current_url.startswith("https://") or contextmap.current_url.startswith("http://")
 
 
 def create_index_for_hostname(hostname, contextmap: ContextMap, starturl=None):
