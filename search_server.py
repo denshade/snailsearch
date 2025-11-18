@@ -2,6 +2,7 @@
 # An object of Flask class is our WSGI application.
 from flask import Flask, request, render_template
 
+from abstr1.hosts import get_hosts
 from search_db import search_on_host
 
 # Flask constructor takes the name of
@@ -20,6 +21,9 @@ def search():
     urls = search_on_host(or_list, and_list, not_list)
     return render_template('results.html', urls=urls, orlist=" ".join(or_list), andlist=" ".join(and_list), notlist=" ".join(not_list))
 
+@app.route('/hosts', methods=['GET'])
+def hosts():
+    return render_template('hosts.html', hosts=get_hosts())
 
 @app.route('/')
 def home():

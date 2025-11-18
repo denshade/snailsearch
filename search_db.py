@@ -63,7 +63,7 @@ def do_filter(cur, or_word_list, and_word_list, not_words):
 
 
 def search_on_host(or_list, and_list, not_list):
-    con = sqlite3.connect("data/websites.db")
+    con = sqlite3.connect("data/vrt.db")
     cur = con.cursor()
 
     return do_filter(cur, or_list, and_list, not_list)
