@@ -1,5 +1,7 @@
 import sqlite3
 
+from abstr1.hosts import get_hosts
+
 
 def must_contain(words: list):
     filter = ""
@@ -63,7 +65,11 @@ def do_filter(cur, or_word_list, and_word_list, not_words):
 
 
 def search_on_host(or_list, and_list, not_list):
-    con = sqlite3.connect("data/vrt.db")
-    cur = con.cursor()
+    result = []
+    for host in get_hosts():
 
-    return do_filter(cur, or_list, and_list, not_list)
+        con = sqlite3.connect(f"data/{host}")
+        cur = con.cursor()
+        result.extend(do_filter(cur, or_list, and_list, not_list))
+
+    return result

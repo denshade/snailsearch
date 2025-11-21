@@ -8,6 +8,7 @@ def get_hosts():
     # Iterate over files in directory
     for name in os.listdir(directory):
         # Open file
-        hosts.append(name)
+        if name != "hosts.db":
+            hosts.append(name)
 
     return hosts
