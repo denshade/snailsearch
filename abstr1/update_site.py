@@ -3,7 +3,7 @@ from urllib.parse import urljoin
 from abstr1.hosts import get_hosts
 from abstr2.hosts import add_to_unknown_hosts, load_hosts, create_host_specific_index
 from abstr2.index import add_to_index, is_etag_in_index, get_urls
-from abstr2.logging import log_processing
+from abstr2.logs import log_processing
 from abstr2.robots import do_robot_delay, load_robots_parser
 from abstr2.site_processing import etag_head
 from abstr2.urls import does_not_need_be_indexed
@@ -59,6 +59,5 @@ def create_index_for_hostname(hostname, contextmap: ContextMap, starturl=None):
 
 for host in get_hosts():
     contextmap = ContextMap()
-    #create_db("nl.wikipedia.org", "https://nl.wikipedia.org/wiki/Hoofdpagina")
     create_index_for_hostname(host.replace(".db", ""), contextmap)
 

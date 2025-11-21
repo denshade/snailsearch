@@ -1,7 +1,7 @@
 from urllib.parse import urljoin
 from abstr2.hosts import add_to_unknown_hosts, load_hosts, create_host_specific_index
 from abstr2.index import add_to_index, is_etag_in_index
-from abstr2.logging import log_processing
+from abstr2.logs import log_processing
 from abstr2.robots import do_robot_delay, load_robots_parser
 from abstr2.site_processing import etag_head
 from abstr2.urls import does_not_need_be_indexed

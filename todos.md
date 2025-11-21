@@ -23,6 +23,7 @@
  
 # Managing sources
 - Gather hostnames in database
+- Show scanning efforts.
 
 # Share databases through peer 2 peer
 - Intro
