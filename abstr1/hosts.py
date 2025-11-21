@@ -2,7 +2,8 @@ import os
 
 
 def get_hosts():
-    directory = r"data"
+    dirname = os.path.dirname(os.path.realpath(__file__))
+    directory = f"{dirname}/../data"
 
     hosts = []
     # Iterate over files in directory
