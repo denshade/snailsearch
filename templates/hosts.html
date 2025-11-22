@@ -17,9 +17,12 @@
 ⠀⠀⠀⠀⠈⠛⢦⣄⡀⠀⠀⠀⠀⠀⠀⠉⠉⠙⠛⠛⠛⠓⠒⠶⠞⣻⠂<BR/>⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠘⢧⣤⡤⠖⠓⠶⠤⠶⠒⠶⠴⠞⠛⠶⠞⠛⠛⠛⠁⠀<BR/>⠀⠀⠀⠀
 
-        {% for host in hosts %}
+        {% for index in indices %}
         <div class="card">
-            <p>{{host}}</p>
+            <p>Index: {{index.index_name}}</p>
+            <p>Start: {{index.update_start}}</p>
+            <p>End: {{index.update_end}}</p>
+            <p>Complete: {{index.pct_complete}}%</p>
             <BR/><BR/>
         </div>
         {% endfor %}

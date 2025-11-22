@@ -1,3 +1,4 @@
+import os
 import sqlite3
 from urllib.parse import urlsplit
 
@@ -25,19 +26,31 @@ def add_to_hosts(host, cur, con):
 def start_scan_index(contextmap: ContextMap, index_name ):
     contextmap.host_cursor.execute("DELETE from indices WHERE index_name = ?", (index_name,))
     sql = f"INSERT INTO indices(index_name, UPDATE_START, PCT_COMPLETE) values(?, datetime(), 0)"
-    contextmap.host_cursor.execute(sql, (index_name,))
+    _host_sql(contextmap, index_name, sql)
     return contextmap
+
+
+def _host_sql(contextmap, index_name, sql):
+    contextmap.host_cursor.execute(sql, (index_name,))
+    contextmap.host_connection.commit()
+
 
 def stop_scan_index(contextmap: ContextMap, index_name ):
     sql = f"UPDATE indices SET UPDATE_STOP = datetime(), PCT_COMPLETE=100 WHERE index_name = ?"
-    contextmap.host_cursor.execute(sql, (index_name,))
+    _host_sql(contextmap, index_name, sql)
+    return contextmap
+
+def update_scan_index_progress(contextmap: ContextMap, index_name, pct):
+    sql = f"UPDATE indices SET UPDATE_STOP = null, PCT_COMPLETE=? WHERE index_name = ?"
+    contextmap.host_cursor.execute(sql, (pct, index_name,))
+    contextmap.host_connection.commit()
     return contextmap
 
 def get_indices(contextmap: ContextMap):
     res = contextmap.host_cursor.execute("SELECT * from indices")
     results = res.fetchall()
     converted = map(lambda result: index(result[0], result[1], result[2], result[3]), results)
-    return converted
+    return list(converted)
 
 def init_hosts_index(contextmap: ContextMap):
     contextmap.host_cursor.execute(
@@ -46,7 +59,9 @@ def init_hosts_index(contextmap: ContextMap):
 
 
 def load_hosts(contextmap: ContextMap) -> ContextMap:
-    hostcon = sqlite3.connect(f"../data/hosts.db")
+    dirname = os.path.dirname(os.path.realpath(__file__))
+    directory = f"{dirname}/../data"
+    hostcon = sqlite3.connect(f"{directory}/hosts.db")
     hostcur = hostcon.cursor()
     contextmap.host_connection = hostcon
     contextmap.host_cursor = hostcur

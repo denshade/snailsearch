@@ -3,6 +3,8 @@
 from flask import Flask, request, render_template
 
 from abstr1.hosts import get_hosts
+from abstr2.context import ContextMap
+from abstr2.hosts import get_indices, load_hosts
 from search_db import search_on_host
 
 # Flask constructor takes the name of
@@ -23,7 +25,9 @@ def search():
 
 @app.route('/hosts', methods=['GET'])
 def hosts():
-    return render_template('hosts.html', hosts=get_hosts())
+    contextmap = ContextMap()
+    load_hosts(contextmap)
+    return render_template('hosts.html', indices=get_indices(contextmap))
 
 @app.route('/')
 def home():
