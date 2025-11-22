@@ -1,8 +1,14 @@
 import sqlite3
-from urllib.parse import urljoin, urlsplit, urlunsplit
+from urllib.parse import urlsplit
 
 from abstr2.context import ContextMap
 
+class index:
+    def __init__(self, index_name, update_start, update_end, pct_complete):
+        self.index_name = index_name
+        self.update_start = update_start
+        self.update_end = update_end
+        self.pct_complete = pct_complete
 
 def add_to_unknown_hosts(contextmap: ContextMap):
     split_url = urlsplit(contextmap.current_url)
@@ -22,10 +28,16 @@ def start_scan_index(contextmap: ContextMap, index_name ):
     contextmap.host_cursor.execute(sql, (index_name,))
     return contextmap
 
+def stop_scan_index(contextmap: ContextMap, index_name ):
+    sql = f"UPDATE indices SET UPDATE_STOP = datetime(), PCT_COMPLETE=100 WHERE index_name = ?"
+    contextmap.host_cursor.execute(sql, (index_name,))
+    return contextmap
+
 def get_indices(contextmap: ContextMap):
     res = contextmap.host_cursor.execute("SELECT * from indices")
     results = res.fetchall()
-    return results
+    converted = map(lambda result: index(result[0], result[1], result[2], result[3]), results)
+    return converted
 
 def init_hosts_index(contextmap: ContextMap):
     contextmap.host_cursor.execute(
