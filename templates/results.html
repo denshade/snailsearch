@@ -6,7 +6,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
    <body>
-   <div class="container">
+   <div class="container-lg p-2">
+       <p>
 ⠀⠀⠀⣤⣄⠀⠀⠀⠀⠀⠀⢀⣤⠶⠒⠚⠛⠒⠲⢦⣄⠀⠀<BR/>⠀⠀⠀⠀
 ⣤⡄⠀⠛⡿⠀⠀⠀⠀⠀⣴⠋⠀⠀⠀⠀⠀⠀⠀⠀⠈⠳⣄⠀⠀⠀⠀<BR/>⠀⠀⠀⠀
 ⠙⢻⡀⠀⣧⠀⠀⠀⠀⢰⡇⠀⠀⠀⣠⡴⠞⠛⠓⢶⣄⠀⠸⣆⠀⠀⠀<BR/>⠀⠀⠀⠀
@@ -16,6 +17,7 @@
 ⠀⠀⠀⠻⣆⠀⠀⠀⠀⠈⠳⢦⣄⣙⣷⣄⣉⠛⠛⣋⣠⡴⠋⠀⠀⠀⠀<BR/>⠀⠀⠀⠀
 ⠀⠀⠀⠀⠈⠛⢦⣄⡀⠀⠀⠀⠀⠀⠀⠉⠉⠙⠛⠛⠛⠓⠒⠶⠞⣻⠂<BR/>⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠘⢧⣤⡤⠖⠓⠶⠤⠶⠒⠶⠴⠞⠛⠶⠞⠛⠛⠛⠁⠀<BR/>⠀⠀⠀⠀
+   </p>
       <form action = "http://localhost:5000/search" method = "post">
          <p>Any of these words: <BR/><input class="form-control" type="text" name = "orlist" value="{{orlist}}" /></p>
           <p>Must have all of these words: <BR/><input class="form-control" type="text" name = "andlist" value="{{andlist}}"/></p>
@@ -23,13 +25,15 @@
          <p><input type="submit" class="btn btn-primary" value = "Search" /></p>
       </form>
         {% for url in urls %}
-        <div class="card">
+        <p>
             <a href="{{url[0]}}">{{url[0]}}</a>
             <BR/><BR/>
-        </div>
+        </p>
         {% endfor %}
        </div>
       <a href="hosts">Host configuration</a>
+   </p>
+   </div>
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
     </body>
