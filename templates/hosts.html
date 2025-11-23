@@ -7,6 +7,7 @@
 </head>
    <body>
    <div class="container">
+   <div >
 ⠀⠀⠀ ⣤⣄⠀⠀⠀⠀⠀⠀⢀⣤⠶⠒⠚⠛⠒⠲⢦⣄⠀⠀<BR/>⠀⠀⠀⠀
 ⣤⡄⠀⠛⡿⠀⠀⠀⠀⠀⣴⠋⠀⠀⠀⠀⠀⠀⠀⠀⠈⠳⣄⠀⠀⠀⠀<BR/>⠀⠀⠀⠀
 ⠙⢻⡀⠀⣧⠀⠀⠀⠀⢰⡇⠀⠀⠀⣠⡴⠞⠛⠓⢶⣄⠀⠸⣆⠀⠀⠀<BR/>⠀⠀⠀⠀
@@ -16,18 +17,17 @@
 ⠀⠀⠀⠻⣆⠀⠀⠀⠀⠈⠳⢦⣄⣙⣷⣄⣉⠛⠛⣋⣠⡴⠋⠀⠀⠀⠀<BR/>⠀⠀⠀⠀
 ⠀⠀⠀⠀⠈⠛⢦⣄⡀⠀⠀⠀⠀⠀⠀⠉⠉⠙⠛⠛⠛⠓⠒⠶⠞⣻⠂<BR/>⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠘⢧⣤⡤⠖⠓⠶⠤⠶⠒⠶⠴⠞⠛⠶⠞⠛⠛⠛⠁⠀<BR/>⠀⠀⠀⠀
+       </div>
 
         {% for index in indices %}
-        <div class="card">
+        <div class="card p-2 m-2">
             <p>Index: {{index.index_name}}</p>
             <p>Start: {{index.update_start}}</p>
             <p>End: {{index.update_end}}</p>
             <p>Complete: {{index.pct_complete}}%</p>
-            <BR/><BR/>
         </div>
         {% endfor %}
-       </div>
+   </div>
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-
     </body>
 </html>
