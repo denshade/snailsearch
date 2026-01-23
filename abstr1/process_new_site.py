@@ -4,7 +4,7 @@ from abstr2.index import add_to_index, is_etag_in_index
 from abstr2.logs import log_processing
 from abstr2.robots import do_robot_delay, load_robots_parser
 from abstr2.site_processing import etag_head
-from abstr2.urls import does_not_need_be_indexed
+from abstr2.urls import needs_be_indexed
 from snail_pipes.URLInput import process
 from snail_pipes.url_filters import URLFilter
 from abstr2.context import ContextMap
@@ -23,7 +23,7 @@ def crawl(url, contextmap: ContextMap):
     for url in urls_to_process:
         contextmap.current_url = url
         visited += 1
-        if does_not_need_be_indexed(contextmap):
+        if not needs_be_indexed(contextmap):
             add_to_unknown_hosts(contextmap)
             urls_to_process.remove(url)
             continue
@@ -56,9 +56,9 @@ def create_index_for_hostname(hostname, contextmap: ContextMap, starturl=None):
     print(crawl(starturl, contextmap))
 
 contextmap = ContextMap()
-#create_db("nl.wikipedia.org", "https://nl.wikipedia.org/wiki/Hoofdpagina")
+create_index_for_hostname("nl.wikipedia.org", contextmap)
 create_index_for_hostname("lite.cnn.com", contextmap)
 #create_db("www.demorgen.be")
-#create_db("nos.nl")
-#create_db("rtl.nl")
+create_index_for_hostname("nos.nl", contextmap)
+create_index_for_hostname("rtl.nl", contextmap)
 

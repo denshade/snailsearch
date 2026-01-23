@@ -7,7 +7,7 @@ from abstr2.index import add_to_index, is_etag_in_index, get_urls
 from abstr2.logs import log_processing
 from abstr2.robots import do_robot_delay, load_robots_parser
 from abstr2.site_processing import etag_head
-from abstr2.urls import does_not_need_be_indexed
+from abstr2.urls import needs_be_indexed
 from snail_pipes.URLInput import process
 from snail_pipes.url_filters import URLFilter
 from abstr2.context import ContextMap
@@ -20,11 +20,12 @@ def crawl(host, contextmap: ContextMap):
     urls_to_process = [host]
     start_scan_index(contextmap, host)
     all_urls = get_urls(contextmap)
+    print(f"processing {host}")
     for url in all_urls:
         contextmap.current_url = url
         update_scan_index_progress(contextmap, host, visited * 100 / len(all_urls))
         visited += 1
-        if does_not_need_be_indexed(contextmap):
+        if not needs_be_indexed(contextmap):
             add_to_unknown_hosts(contextmap)
             try:
                 urls_to_process.remove(url)
