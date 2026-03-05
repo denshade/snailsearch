@@ -2,7 +2,8 @@ package search;
 
 import crawlercommons.robots.BaseRobotRules;
 
-import java.sql.Connection;
+import search.store.HostStore;
+import search.store.IndexStore;
 
 /**
  * Port of abstr2.context.ContextMap.
@@ -12,11 +13,13 @@ public class ContextMap {
     public String currentUrl;
     public URLFilter urlFilter;
     public BaseRobotRules robotRules;
-    public Connection hostConnection;
-    public java.sql.Statement hostStatement;
     public String currentHost;
-    public Connection indexConnection;
-    public java.sql.Statement indexStatement;
+
+    /** Which store to use for hosts and index. Set before init. */
+    public boolean useCsv = true;
+
+    public HostStore hostStore;
+    public IndexStore indexStore;
 
     public ContextMap() {
     }

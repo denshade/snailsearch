@@ -70,8 +70,9 @@ public final class ProcessNewSite {
 
     public static void main(String[] args) {
         ContextMap contextmap = new ContextMap();
-        createIndexForHostname("nl.wikipedia.org", contextmap, null);
-        // createIndexForHostname("lite.cnn.com", contextmap, null);
+        contextmap.useCsv = true;  // use CSV; set to false for SQLite
+        //createIndexForHostname("nl.wikipedia.org", contextmap, null);
+        createIndexForHostname("lite.cnn.com", contextmap, null);
         // createIndexForHostname("nos.nl", contextmap, null);
         // createIndexForHostname("rtl.nl", contextmap, null);
     }

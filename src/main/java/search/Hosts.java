@@ -1,89 +1,69 @@
 package search;
 
+import search.store.CsvHostStore;
+import search.store.HostStore;
+import search.store.IndexStore;
+import search.store.SqliteHostStore;
+import search.store.SqliteIndexStore;
+import search.store.CsvIndexStore;
+
 import java.io.File;
-import java.net.URI;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
- * Port of abstr2.hosts.
+ * Port of abstr2.hosts. Delegates to HostStore / IndexStore implementations.
  */
 public final class Hosts {
+
+    private static final String DATA_DIR = "data";
 
     private Hosts() {
     }
 
     public static void addToUnknownHosts(ContextMap contextmap) {
         try {
-            URI uri = URI.create(contextmap.currentUrl);
-            String cleanUrl = uri.getScheme() + "://" + uri.getHost();
-            if (uri.getPort() > 0 && uri.getPort() != ("https".equals(uri.getScheme()) ? 443 : 80)) {
-                cleanUrl += ":" + uri.getPort();
-            }
+            String cleanUrl = cleanHostUrl(contextmap.currentUrl);
             System.out.println("skipped " + cleanUrl);
-            addToHosts(cleanUrl, contextmap.hostStatement, contextmap.hostConnection);
+            contextmap.hostStore.addHost(cleanUrl);
         } catch (Exception e) {
             System.out.println("skipped " + contextmap.currentUrl);
-            addToHosts(contextmap.currentUrl, contextmap.hostStatement, contextmap.hostConnection);
+            contextmap.hostStore.addHost(contextmap.currentUrl);
         }
     }
 
-    private static void addToHosts(String host, Statement cur, Connection con) {
-        try {
-            try (var ps = con.prepareStatement("INSERT OR IGNORE INTO host(url) values(?)")) {
-                ps.setString(1, host);
-                ps.executeUpdate();
-            }
-            con.commit();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+    private static String cleanHostUrl(String url) {
+        java.net.URI uri = java.net.URI.create(url);
+        String clean = uri.getScheme() + "://" + uri.getHost();
+        if (uri.getPort() > 0 && uri.getPort() != ("https".equals(uri.getScheme()) ? 443 : 80)) {
+            clean += ":" + uri.getPort();
         }
+        return clean;
     }
 
     public static ContextMap loadHosts(ContextMap contextmap) {
-        File dataDir = new File("data");
-        if (!dataDir.exists()) {
-            dataDir.mkdirs();
-        }
-        String dbPath = new File(dataDir, "hosts.db").getAbsolutePath();
-        try {
-            Connection hostcon = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
-            hostcon.setAutoCommit(false);
-            Statement hostcur = hostcon.createStatement();
-            contextmap.hostConnection = hostcon;
-            contextmap.hostStatement = hostcur;
-            initHostsIndex(contextmap);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        ensureDataDir();
+        HostStore store = contextmap.useCsv
+                ? new CsvHostStore(DATA_DIR)
+                : new SqliteHostStore(DATA_DIR);
+        store.init();
+        contextmap.hostStore = store;
         return contextmap;
-    }
-
-    private static void initHostsIndex(ContextMap contextmap) throws SQLException {
-        contextmap.hostStatement.executeUpdate(
-                "CREATE TABLE IF NOT EXISTS indices(index_name varchar, UPDATE_START timestamp, UPDATE_STOP timestamp, PCT_COMPLETE DOUBLE, UNIQUE(index_name))");
-        contextmap.hostStatement.executeUpdate("CREATE TABLE IF NOT EXISTS host(URL, LAST_UPDATE, UNIQUE(URL))");
     }
 
     public static ContextMap createHostSpecificIndex(ContextMap contextmap) {
+        ensureDataDir();
         String hostname = contextmap.currentHost;
-        File dataDir = new File("data");
+        IndexStore store = contextmap.useCsv
+                ? new CsvIndexStore(DATA_DIR, hostname)
+                : new SqliteIndexStore(DATA_DIR, hostname);
+        store.init();
+        contextmap.indexStore = store;
+        return contextmap;
+    }
+
+    private static void ensureDataDir() {
+        File dataDir = new File(DATA_DIR);
         if (!dataDir.exists()) {
             dataDir.mkdirs();
         }
-        String dbPath = new File(dataDir, hostname + ".db").getAbsolutePath();
-        try {
-            Connection con = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
-            con.setAutoCommit(false);
-            Statement cur = con.createStatement();
-            cur.executeUpdate("CREATE TABLE IF NOT EXISTS site(URL, etag, text)");
-            contextmap.indexConnection = con;
-            contextmap.indexStatement = cur;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return contextmap;
     }
 }
