@@ -30,7 +30,7 @@ public class URLInput {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
-                    .header("User-Agent", "Java")
+                    .header("User-Agent", "exact-search")
                     .GET()
                     .build();
 
