@@ -57,8 +57,7 @@ def create_index_for_hostname(hostname, contextmap: ContextMap, starturl=None):
 
 contextmap = ContextMap()
 create_index_for_hostname("nl.wikipedia.org", contextmap)
-create_index_for_hostname("lite.cnn.com", contextmap)
+#create_index_for_hostname("lite.cnn.com", contextmap)
 #create_db("www.demorgen.be")
-create_index_for_hostname("nos.nl", contextmap)
-create_index_for_hostname("rtl.nl", contextmap)
-
+#create_index_for_hostname("nos.nl", contextmap)
+#create_index_for_hostname("rtl.nl", contextmap)
