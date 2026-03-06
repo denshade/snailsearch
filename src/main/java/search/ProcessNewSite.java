@@ -13,6 +13,7 @@ import java.util.Set;
 public final class ProcessNewSite {
 
     private static final Hosts HOSTS = new Hosts();
+    private static final Index INDEX = new Index();
 
     private ProcessNewSite() {
     }
@@ -37,13 +38,13 @@ public final class ProcessNewSite {
             }
 
             String tag = SiteProcessing.etagHead(url);
-            if (Index.isEtagInIndex(url, tag, contextmap)) {
+            if (INDEX.isEtagInIndex(url, tag, contextmap)) {
                 cached++;
                 continue;
             }
 
             ProcessResult processResult = URLInput.process(url);
-            Index.addToIndex(contextmap, processResult);
+            INDEX.addToIndex(contextmap, processResult);
 
             for (String anchor : processResult.getAnchorUrls(url)) {
                 if (!seen.contains(anchor)) {
