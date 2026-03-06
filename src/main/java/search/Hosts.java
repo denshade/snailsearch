@@ -11,15 +11,25 @@ import java.io.File;
 
 /**
  * Port of abstr2.hosts. Delegates to HostStore / IndexStore implementations.
+ * Can be instantiated with a custom data directory (e.g. for tests).
  */
 public final class Hosts {
 
-    private static final String DATA_DIR = "data";
+    private static final String DEFAULT_DATA_DIR = "data";
 
-    private Hosts() {
+    private final String dataDir;
+
+    /** Uses default data directory "data". */
+    public Hosts() {
+        this(DEFAULT_DATA_DIR);
     }
 
-    public static void addToUnknownHosts(ContextMap contextmap) {
+    /** @param dataDir directory for host/index store files */
+    public Hosts(String dataDir) {
+        this.dataDir = dataDir;
+    }
+
+    public void addToUnknownHosts(ContextMap contextmap) {
         try {
             String cleanUrl = cleanHostUrl(contextmap.currentUrl);
             System.out.println("skipped " + cleanUrl);
@@ -30,7 +40,8 @@ public final class Hosts {
         }
     }
 
-    private static String cleanHostUrl(String url) {
+    /** Normalizes a URL to scheme://host[:port] (port only if non-default). Package visibility for tests. */
+    static String cleanHostUrl(String url) {
         java.net.URI uri = java.net.URI.create(url);
         String clean = uri.getScheme() + "://" + uri.getHost();
         if (uri.getPort() > 0 && uri.getPort() != ("https".equals(uri.getScheme()) ? 443 : 80)) {
@@ -39,31 +50,31 @@ public final class Hosts {
         return clean;
     }
 
-    public static ContextMap loadHosts(ContextMap contextmap) {
+    public ContextMap loadHosts(ContextMap contextmap) {
         ensureDataDir();
         HostStore store = contextmap.useCsv
-                ? new CsvHostStore(DATA_DIR)
-                : new SqliteHostStore(DATA_DIR);
+                ? new CsvHostStore(dataDir)
+                : new SqliteHostStore(dataDir);
         store.init();
         contextmap.hostStore = store;
         return contextmap;
     }
 
-    public static ContextMap createHostSpecificIndex(ContextMap contextmap) {
+    public ContextMap createHostSpecificIndex(ContextMap contextmap) {
         ensureDataDir();
         String hostname = contextmap.currentHost;
         IndexStore store = contextmap.useCsv
-                ? new CsvIndexStore(DATA_DIR, hostname)
-                : new SqliteIndexStore(DATA_DIR, hostname);
+                ? new CsvIndexStore(dataDir, hostname)
+                : new SqliteIndexStore(dataDir, hostname);
         store.init();
         contextmap.indexStore = store;
         return contextmap;
     }
 
-    private static void ensureDataDir() {
-        File dataDir = new File(DATA_DIR);
-        if (!dataDir.exists()) {
-            dataDir.mkdirs();
+    private void ensureDataDir() {
+        File dir = new File(dataDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
         }
     }
 }

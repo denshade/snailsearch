@@ -12,6 +12,8 @@ import java.util.Set;
  */
 public final class ProcessNewSite {
 
+    private static final Hosts HOSTS = new Hosts();
+
     private ProcessNewSite() {
     }
 
@@ -30,7 +32,7 @@ public final class ProcessNewSite {
             visited++;
 
             if (!Urls.needsBeIndexed(contextmap)) {
-                Hosts.addToUnknownHosts(contextmap);
+                HOSTS.addToUnknownHosts(contextmap);
                 continue;
             }
 
@@ -58,8 +60,8 @@ public final class ProcessNewSite {
 
     public static void createIndexForHostname(String hostname, ContextMap contextmap, String starturl) {
         contextmap.currentHost = hostname;
-        contextmap = Hosts.createHostSpecificIndex(contextmap);
-        contextmap = Hosts.loadHosts(contextmap);
+        contextmap = HOSTS.createHostSpecificIndex(contextmap);
+        contextmap = HOSTS.loadHosts(contextmap);
         contextmap = Robots.loadRobotsParser(contextmap);
         if (starturl == null) {
             starturl = "https://" + hostname;
