@@ -14,6 +14,7 @@ public final class ProcessNewSite {
 
     private static final Hosts HOSTS = new Hosts();
     private static final Index INDEX = new Index();
+    private static final Urls URLS = new Urls();
 
     private ProcessNewSite() {
     }
@@ -32,7 +33,7 @@ public final class ProcessNewSite {
             contextmap.currentUrl = url;
             visited++;
 
-            if (!Urls.needsBeIndexed(contextmap)) {
+            if (!URLS.needsBeIndexed(contextmap)) {
                 HOSTS.addToUnknownHosts(contextmap);
                 continue;
             }

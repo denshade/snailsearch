@@ -1,24 +1,23 @@
 package search;
 
-import crawlercommons.robots.BaseRobotRules;
-
 /**
  * Port of abstr2.urls.
+ * Can be instantiated for testing.
  */
 public final class Urls {
 
-    private Urls() {
+    public Urls() {
     }
 
-    public static boolean isSupportedSite(ContextMap contextmap) {
+    public boolean isSupportedSite(ContextMap contextmap) {
         String url = contextmap.currentUrl;
         return url != null && (url.startsWith("https://") || url.startsWith("http://"));
     }
 
-    public static boolean needsBeIndexed(ContextMap contextmap) {
+    public boolean needsBeIndexed(ContextMap contextmap) {
         String url = contextmap.currentUrl;
         URLFilter urlfilter = contextmap.urlFilter;
-        BaseRobotRules rp = contextmap.robotRules;
+        RobotRules rp = contextmap.robotRules;
         if (!isSupportedSite(contextmap)) {
             return false;
         }

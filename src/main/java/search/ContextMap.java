@@ -1,7 +1,5 @@
 package search;
 
-import crawlercommons.robots.BaseRobotRules;
-
 import search.store.HostStore;
 import search.store.IndexStore;
 
@@ -12,7 +10,7 @@ public class ContextMap {
 
     public String currentUrl;
     public URLFilter urlFilter;
-    public BaseRobotRules robotRules;
+    public RobotRules robotRules;
     public String currentHost;
 
     /** Which store to use for hosts and index. Set before init. */
