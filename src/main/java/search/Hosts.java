@@ -1,11 +1,11 @@
 package search;
 
-import search.store.CsvHostStore;
-import search.store.HostStore;
-import search.store.IndexStore;
-import search.store.SqliteHostStore;
-import search.store.SqliteIndexStore;
-import search.store.CsvIndexStore;
+import search.store.CsvHostDAO;
+import search.store.HostDAO;
+import search.store.IndexDAO;
+import search.store.SqliteHostDAO;
+import search.store.SqliteIndexDAO;
+import search.store.CsvIndexDAO;
 
 import java.io.File;
 
@@ -33,10 +33,10 @@ public final class Hosts {
         try {
             String cleanUrl = cleanHostUrl(contextmap.currentUrl);
             System.out.println("skipped " + cleanUrl);
-            contextmap.hostStore.addHost(cleanUrl);
+            contextmap.hostDAO.addHost(cleanUrl);
         } catch (Exception e) {
             System.out.println("skipped " + contextmap.currentUrl);
-            contextmap.hostStore.addHost(contextmap.currentUrl);
+            contextmap.hostDAO.addHost(contextmap.currentUrl);
         }
     }
 
@@ -52,22 +52,22 @@ public final class Hosts {
 
     public ContextMap loadHosts(ContextMap contextmap) {
         ensureDataDir();
-        HostStore store = contextmap.useCsv
-                ? new CsvHostStore(dataDir)
-                : new SqliteHostStore(dataDir);
+        HostDAO store = contextmap.useCsv
+                ? new CsvHostDAO(dataDir)
+                : new SqliteHostDAO(dataDir);
         store.init();
-        contextmap.hostStore = store;
+        contextmap.hostDAO = store;
         return contextmap;
     }
 
     public ContextMap createHostSpecificIndex(ContextMap contextmap) {
         ensureDataDir();
         String hostname = contextmap.currentHost;
-        IndexStore store = contextmap.useCsv
-                ? new CsvIndexStore(dataDir, hostname)
-                : new SqliteIndexStore(dataDir, hostname);
+        IndexDAO store = contextmap.useCsv
+                ? new CsvIndexDAO(dataDir, hostname)
+                : new SqliteIndexDAO(dataDir, hostname);
         store.init();
-        contextmap.indexStore = store;
+        contextmap.indexDAO = store;
         return contextmap;
     }
 

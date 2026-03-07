@@ -8,12 +8,12 @@ import java.sql.SQLException;
 /**
  * SQLite-backed index store (one db per hostname, site table).
  */
-public class SqliteIndexStore implements IndexStore {
+public class SqliteIndexDAO implements IndexDAO {
 
     private final String dbPath;
     private Connection connection;
 
-    public SqliteIndexStore(String dataDir, String hostname) {
+    public SqliteIndexDAO(String dataDir, String hostname) {
         File data = new File(dataDir, hostname + ".db");
         this.dbPath = data.getAbsolutePath();
     }

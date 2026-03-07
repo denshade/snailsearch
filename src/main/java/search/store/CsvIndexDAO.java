@@ -11,13 +11,13 @@ import java.util.List;
  * CSV-backed index store (data/{hostname}.csv). Columns: url,etag,text.
  * Text may contain commas; fields are quoted when needed.
  */
-public class CsvIndexStore implements IndexStore {
+public class CsvIndexDAO implements IndexDAO {
 
     private static final String HEADER = "url,etag,text";
     private final Path file;
     private final List<Row> rows = new ArrayList<>();
 
-    public CsvIndexStore(String dataDir, String hostname) {
+    public CsvIndexDAO(String dataDir, String hostname) {
         this.file = Path.of(dataDir, hostname + ".csv");
     }
 

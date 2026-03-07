@@ -3,7 +3,7 @@ package search.store;
 /**
  * Abstraction for storing the per-host page index (url, etag, text).
  */
-public interface IndexStore {
+public interface IndexDAO {
 
     /** Create or open the store for this host. */
     void init();

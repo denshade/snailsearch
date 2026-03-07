@@ -11,13 +11,13 @@ import java.util.Set;
 /**
  * CSV-backed host store (data/hosts.csv). One column: url.
  */
-public class CsvHostStore implements HostStore {
+public class CsvHostDAO implements HostDAO {
 
     private static final String HEADER = "url";
     private final Path file;
     private final Set<String> known = new HashSet<>();
 
-    public CsvHostStore(String dataDir) {
+    public CsvHostDAO(String dataDir) {
         this.file = Path.of(dataDir, "hosts.csv");
     }
 

@@ -8,12 +8,12 @@ import java.sql.SQLException;
 /**
  * SQLite-backed host store (hosts.db, host table).
  */
-public class SqliteHostStore implements HostStore {
+public class SqliteHostDAO implements HostDAO {
 
     private final String dbPath;
     private Connection connection;
 
-    public SqliteHostStore(String dataDir) {
+    public SqliteHostDAO(String dataDir) {
         File data = new File(dataDir, "hosts.db");
         this.dbPath = data.getAbsolutePath();
     }

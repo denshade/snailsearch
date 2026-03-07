@@ -1,7 +1,7 @@
 package search;
 
-import search.store.HostStore;
-import search.store.IndexStore;
+import search.store.HostDAO;
+import search.store.IndexDAO;
 
 /**
  * Port of abstr2.context.ContextMap.
@@ -16,8 +16,8 @@ public class ContextMap {
     /** Which store to use for hosts and index. Set before init. */
     public boolean useCsv = true;
 
-    public HostStore hostStore;
-    public IndexStore indexStore;
+    public HostDAO hostDAO;
+    public IndexDAO indexDAO;
 
     public ContextMap() {
     }

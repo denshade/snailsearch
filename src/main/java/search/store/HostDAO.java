@@ -3,7 +3,7 @@ package search.store;
 /**
  * Abstraction for storing known/skipped hosts.
  */
-public interface HostStore {
+public interface HostDAO {
 
     /** Create or open the store. */
     void init();
