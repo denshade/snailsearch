@@ -3,7 +3,10 @@ package search.store;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * SQLite-backed index store (one db per hostname, site table).
@@ -69,6 +72,22 @@ public class SqliteIndexDAO implements IndexDAO {
             }
         } catch (SQLException e) {
             return false;
+        }
+    }
+
+    @Override
+    public List<String> getUrls() {
+        try {
+            List<String> urls = new ArrayList<>();
+            try (var st = connection.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT url FROM site")) {
+                while (rs.next()) {
+                    urls.add(rs.getString(1));
+                }
+            }
+            return urls;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }

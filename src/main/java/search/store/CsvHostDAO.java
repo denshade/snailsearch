@@ -64,6 +64,21 @@ public class CsvHostDAO implements HostDAO {
         }
     }
 
+    @Override
+    public void startScanIndex(String indexName) {
+        // No indices table in CSV store
+    }
+
+    @Override
+    public void stopScanIndex(String indexName) {
+        // No indices table in CSV store
+    }
+
+    @Override
+    public void updateScanIndexProgress(String indexName, double pctComplete) {
+        // No indices table in CSV store
+    }
+
     private static String quoteCsvField(String s) {
         if (s == null) return "";
         if (s.indexOf(',') < 0 && s.indexOf('"') < 0 && !s.contains("\n")) {

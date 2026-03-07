@@ -10,4 +10,13 @@ public interface HostDAO {
 
     /** Record a host URL (e.g. skipped). Idempotent. */
     void addHost(String url);
+
+    /** Start a scan record for update_site (index_name = start URL). No-op for CSV. */
+    void startScanIndex(String indexName);
+
+    /** Mark scan complete. No-op for CSV. */
+    void stopScanIndex(String indexName);
+
+    /** Update scan progress percentage. No-op for CSV. */
+    void updateScanIndexProgress(String indexName, double pctComplete);
 }

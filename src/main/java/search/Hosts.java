@@ -8,6 +8,8 @@ import search.store.SqliteIndexDAO;
 import search.store.CsvIndexDAO;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Port of abstr2.hosts. Delegates to HostStore / IndexStore implementations.
@@ -16,6 +18,8 @@ import java.io.File;
 public final class Hosts {
 
     private static final String DEFAULT_DATA_DIR = "data";
+    private static final String HOSTS_CSV = "hosts.csv";
+    private static final String HOSTS_DB = "hosts.db";
 
     private final String dataDir;
 
@@ -76,5 +80,28 @@ public final class Hosts {
         if (!dir.exists()) {
             dir.mkdirs();
         }
+    }
+
+    /**
+     * Port of abstr1.hosts.get_hosts. Lists host index files in data dir (excluding the host store)
+     * and returns hostnames (filename without extension).
+     */
+    public List<String> getHosts(boolean useCsv) {
+        ensureDataDir();
+        File dir = new File(dataDir);
+        File[] files = dir.listFiles();
+        List<String> hostnames = new ArrayList<>();
+        if (files == null) return hostnames;
+        String exclude = useCsv ? HOSTS_CSV : HOSTS_DB;
+        String suffix = useCsv ? ".csv" : ".db";
+        for (File f : files) {
+            if (!f.isFile()) continue;
+            String name = f.getName();
+            if (name.equals(exclude)) continue;
+            if (name.endsWith(suffix)) {
+                hostnames.add(name.substring(0, name.length() - suffix.length()));
+            }
+        }
+        return hostnames;
     }
 }

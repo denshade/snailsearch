@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * CSV-backed index store (data/{hostname}.csv). Columns: url,etag,text.
@@ -62,6 +63,11 @@ public class CsvIndexDAO implements IndexDAO {
             }
         }
         return false;
+    }
+
+    @Override
+    public List<String> getUrls() {
+        return rows.stream().map(r -> r.url).collect(Collectors.toList());
     }
 
     private void writeAll() {

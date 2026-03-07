@@ -49,4 +49,51 @@ public class SqliteHostDAO implements HostDAO {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void startScanIndex(String indexName) {
+        try {
+            try (var ps = connection.prepareStatement("DELETE FROM indices WHERE index_name = ?")) {
+                ps.setString(1, indexName);
+                ps.executeUpdate();
+            }
+            try (var ps = connection.prepareStatement(
+                    "INSERT INTO indices(index_name, UPDATE_START, PCT_COMPLETE) VALUES(?, datetime('now'), 0)")) {
+                ps.setString(1, indexName);
+                ps.executeUpdate();
+            }
+            connection.commit();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void stopScanIndex(String indexName) {
+        try {
+            try (var ps = connection.prepareStatement(
+                    "UPDATE indices SET UPDATE_STOP = datetime('now'), PCT_COMPLETE = 100 WHERE index_name = ?")) {
+                ps.setString(1, indexName);
+                ps.executeUpdate();
+            }
+            connection.commit();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void updateScanIndexProgress(String indexName, double pctComplete) {
+        try {
+            try (var ps = connection.prepareStatement(
+                    "UPDATE indices SET UPDATE_STOP = NULL, PCT_COMPLETE = ? WHERE index_name = ?")) {
+                ps.setDouble(1, pctComplete);
+                ps.setString(2, indexName);
+                ps.executeUpdate();
+            }
+            connection.commit();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

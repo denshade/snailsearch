@@ -130,5 +130,10 @@ class IndexTest {
             }
             return false;
         }
+
+        @Override
+        public List<String> getUrls() {
+            return List.of();
+        }
     }
 }

@@ -159,5 +159,20 @@ class HostsTest {
         public void addHost(String url) {
             addedUrls.add(url);
         }
+
+        @Override
+        public void startScanIndex(String indexName) {
+
+        }
+
+        @Override
+        public void stopScanIndex(String indexName) {
+
+        }
+
+        @Override
+        public void updateScanIndexProgress(String indexName, double pctComplete) {
+
+        }
     }
 }
