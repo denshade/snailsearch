@@ -13,6 +13,7 @@ public final class SiteProcessing {
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
             .followRedirects(HttpClient.Redirect.NORMAL)
             .build();
+    private static final String USER_AGENT = "exact-search";
 
     private SiteProcessing() {
     }
@@ -23,7 +24,7 @@ public final class SiteProcessing {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .method("HEAD", HttpRequest.BodyPublishers.noBody())
-                    .header("User-Agent", "Java")
+                    .header("User-Agent", USER_AGENT)
                     .build();
             HttpResponse<Void> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.discarding());
             tag = response.headers().firstValue("ETag").orElse(null);
