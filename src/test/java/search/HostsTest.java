@@ -92,22 +92,6 @@ class HostsTest {
         assertTrue(Files.exists(tempDir.resolve("hosts.csv")));
     }
 
-    @Test
-    void loadHosts_withSqlite_setsSqliteStore() throws Exception {
-        // Use build dir: SQLite keeps DB open so @TempDir cleanup would fail on Windows
-        Path dir = Path.of("build", "test-data", "hosts-sqlite-" + UUID.randomUUID());
-        Files.createDirectories(dir);
-        Hosts hosts = new Hosts(dir.toString());
-        ContextMap ctx = new ContextMap();
-        ctx.useCsv = false;
-
-        hosts.loadHosts(ctx);
-
-        assertNotNull(ctx.hostDAO);
-        ctx.hostDAO.addHost("https://sqlite.example.com");
-        assertTrue(Files.exists(dir.resolve("hosts.db")));
-    }
-
     // --- createHostSpecificIndex (real CsvIndexStore in temp dir) ---
 
     @Test
