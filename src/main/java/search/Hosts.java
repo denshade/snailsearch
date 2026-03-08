@@ -56,9 +56,7 @@ public final class Hosts {
 
     public ContextMap loadHosts(ContextMap contextmap) {
         ensureDataDir();
-        HostDAO store = contextmap.useCsv
-                ? new CsvHostDAO(dataDir)
-                : new SqliteHostDAO(dataDir);
+        HostDAO store = new CsvHostDAO(dataDir);
         store.init();
         contextmap.hostDAO = store;
         return contextmap;
@@ -67,9 +65,7 @@ public final class Hosts {
     public ContextMap createHostSpecificIndex(ContextMap contextmap) {
         ensureDataDir();
         String hostname = contextmap.currentHost;
-        IndexDAO store = contextmap.useCsv
-                ? new CsvIndexDAO(dataDir, hostname)
-                : new SqliteIndexDAO(dataDir, hostname);
+        var store = new CsvIndexDAO(dataDir, hostname);
         store.init();
         contextmap.indexDAO = store;
         return contextmap;
