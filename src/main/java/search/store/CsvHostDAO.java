@@ -1,11 +1,15 @@
 package search.store;
 
+import search.IndexRecord;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -77,6 +81,11 @@ public class CsvHostDAO implements HostDAO {
     @Override
     public void updateScanIndexProgress(String indexName, double pctComplete) {
         // No indices table in CSV store
+    }
+
+    @Override
+    public List<IndexRecord> getIndices() {
+        return Collections.emptyList();
     }
 
     private static String quoteCsvField(String s) {

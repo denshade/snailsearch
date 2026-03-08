@@ -174,5 +174,10 @@ class HostsTest {
         public void updateScanIndexProgress(String indexName, double pctComplete) {
 
         }
+
+        @Override
+        public List<IndexRecord> getIndices() {
+            return List.of();
+        }
     }
 }

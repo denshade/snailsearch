@@ -1,9 +1,15 @@
 package search.store;
 
+import search.IndexRecord;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * SQLite-backed host store (hosts.db, host table).
@@ -95,5 +101,26 @@ public class SqliteHostDAO implements HostDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<IndexRecord> getIndices() {
+        List<IndexRecord> list = new ArrayList<>();
+        try {
+            try (Statement st = connection.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT index_name, UPDATE_START, UPDATE_STOP, PCT_COMPLETE FROM indices")) {
+                while (rs.next()) {
+                    String name = rs.getString(1);
+                    String start = rs.getString(2);
+                    String end = rs.getString(3);
+                    double pct = rs.getDouble(4);
+                    if (rs.wasNull()) pct = 0;
+                    list.add(new IndexRecord(name, start, end, pct));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return list;
     }
 }
