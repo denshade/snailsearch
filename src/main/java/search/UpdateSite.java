@@ -82,7 +82,7 @@ public final class UpdateSite {
         String dataDir = "data";
         boolean useCsv = true;
         Hosts hosts = new Hosts(dataDir);
-        List<String> hostnames = hosts.getHosts(useCsv);
+        List<String> hostnames = hosts.getHosts();
 
         for (String host : hostnames) {
             ContextMap contextmap = new ContextMap();
