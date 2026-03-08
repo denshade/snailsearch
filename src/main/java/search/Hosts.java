@@ -2,9 +2,6 @@ package search;
 
 import search.store.CsvHostDAO;
 import search.store.HostDAO;
-import search.store.IndexDAO;
-import search.store.SqliteHostDAO;
-import search.store.SqliteIndexDAO;
 import search.store.CsvIndexDAO;
 
 import java.io.File;
