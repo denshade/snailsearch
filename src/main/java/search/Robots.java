@@ -42,11 +42,11 @@ public final class Robots {
             String robotsUrl = "https://" + hostname + "/robots.txt";
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(robotsUrl))
-                    .header("User-Agent", "Java")
+                    .header("User-Agent", UserAgent.getUserAgent())
                     .GET()
                     .build();
             HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            return CrawlerCommonsAdapter.parse(robotsUrl, response.body(), "text/plain", "Java");
+            return CrawlerCommonsAdapter.parse(robotsUrl, response.body(), "text/plain", UserAgent.getUserAgent());
         } catch (Exception e) {
             System.out.println("error load robots.txt");
             return null;

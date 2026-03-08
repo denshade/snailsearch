@@ -66,7 +66,7 @@ public final class UpdateSite {
         return visited;
     }
 
-    public static void createIndexForHostname(String hostname, ContextMap contextmap, String starturl) {
+    public static void updateIndexForHostname(String hostname, ContextMap contextmap, String starturl) {
         contextmap.currentHost = hostname;
         contextmap = HOSTS.createHostSpecificIndex(contextmap);
         contextmap = HOSTS.loadHosts(contextmap);
@@ -87,7 +87,7 @@ public final class UpdateSite {
         for (String host : hostnames) {
             ContextMap contextmap = new ContextMap();
             contextmap.useCsv = useCsv;
-            createIndexForHostname(host, contextmap, null);
+            updateIndexForHostname(host, contextmap, null);
         }
     }
 }
